@@ -1,12 +1,13 @@
 package Dancer::Plugin::Res;
 
-our $VERSION = '0.0002'; # VERSION
+our $VERSION = '0.0003'; # VERSION
 
 use Dancer ':syntax';
 use Dancer::Plugin;
 
 register res => sub {
     my ($status, $body) = @_;
+    $body = '' unless defined $body;
     status $status;
     return $body;
 };
@@ -27,7 +28,7 @@ Dancer::Plugin::Res - Syntax sugar for setting the status and returning a respon
 
 =head1 VERSION
 
-version 0.0002
+version 0.0003
 
 =head1 SYNOPSIS
 
@@ -54,14 +55,23 @@ is equivalent to:
     return { msg => reason };
 
 I made this plugin because I wanted a function like L<send_error()>
-for ReST applications that return things like json instead of html.
-C<send_error "reason ...", 500> will not always render the first argument
+that behaved more consistently.
+C<send_error("reason ...", 500)> will not always render the first argument
 you give it in the response.
-When your app is running in production mode, it will attempt to render
-a generic 500.html page.
-Which is great for front-end things,
-but not for back-end code where you always want your application to render the
+When your app is running in production mode with C<show_errors> set to false,
+it will attempt to render a generic 500.html page.
+This is great for front-end only applications,
+but not for creating an api where you always want your application to render the
 thing that you told it to render.
+
+=head1 FUNCTIONS
+
+=head2 res
+
+    res($status, [$reason])
+
+Sets the status to $status and returns $reason.
+If $reason is not provided, returns an empty string.
 
 =head1 AUTHOR
 
